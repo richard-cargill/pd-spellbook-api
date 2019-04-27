@@ -23,12 +23,14 @@ const getRows = () => new Promise(function(resolve, reject) {
   });
 });
 
+
+
 function pluckContent(accu, current, index) {
   const {title, tags, content} = current;
   if(!title) return accu;
   return [...accu, {
     title: sanitizeHtml(title),
-    tags: sanitizeHtml(tags),
+    tags: sanitizeHtml(tags).split(','),
     children: sanitizeHtml(content)}];
 }
 
