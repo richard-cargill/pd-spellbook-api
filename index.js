@@ -1,6 +1,7 @@
 const GoogleSpreadsheet = require('google-spreadsheet');
 const {send} = require('micro');
 const sanitizeHtml = require('sanitize-html');
+const cors = require('micro-cors')();
 const doc = new GoogleSpreadsheet('1FTrFBP-ss-R76XncyJv9znOJCAEMgrWqRfqAVaS5HNs');
 
 const getRows = () => new Promise(function(resolve, reject) {
@@ -38,4 +39,4 @@ async function handler(req, res) {
   send(res, 200, formattedResponse);
 }
 
-module.exports = handler;
+module.exports = cors(handler);
