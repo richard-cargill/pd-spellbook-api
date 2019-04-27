@@ -1,7 +1,8 @@
 const GoogleSpreadsheet = require('google-spreadsheet');
 const {send} = require('micro');
 const sanitizeHtml = require('sanitize-html');
-const cors = require('micro-cors');
+const microCors = require('micro-cors');
+const cors = microCors({});
 const doc = new GoogleSpreadsheet('1FTrFBP-ss-R76XncyJv9znOJCAEMgrWqRfqAVaS5HNs');
 
 const getRows = () => new Promise(function(resolve, reject) {
@@ -35,8 +36,8 @@ async function handler(req, res) {
   const rows = await getRows();
 
   const formattedResponse = rows.reduce(pluckContent, []);
-
+  res.setHeader('Access-Control-Allow-Origin', '*');
   send(res, 200, formattedResponse);
 }
 
-module.exports = cors({origin: '*'})(handler);
+module.exports = handler;
