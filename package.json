@@ -5,13 +5,15 @@
   "license": "MIT",
   "scripts": {
     "start": "micro",
-    "dev": "micro-dev"
+    "dev": "micro-dev",
+    "deploy": "now"
   },
   "dependencies": {
     "google-spreadsheet": "^2.0.7",
     "micro": "^9.3.3",
     "micro-cors": "^0.1.1",
     "micro-dev": "^3.0.0",
+    "now": "^15.0.8",
     "sanitize-html": "^1.20.1"
   }
 }
