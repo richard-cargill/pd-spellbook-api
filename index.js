@@ -23,23 +23,63 @@ const getRows = () => new Promise(function(resolve, reject) {
   });
 });
 
+function sortByTitle(rows) {
+  return [...rows.sort((a, b) => {
+    const aTitle = a.title.toLowerCase();
+    const bTitle = b.title.toLowerCase();
 
+    if(aTitle < bTitle) return -1;
+    if(aTitle > bTitle) return 1;
+    return 0;
+  })];
+}
 
-function pluckContent(accu, current, index) {
-  const {title, tags, content} = current;
-  if(!title) return accu;
-  return [...accu, {
-    title: sanitizeHtml(title),
-    tags: sanitizeHtml(tags).split(','),
-    children: sanitizeHtml(content)}];
+function getFirstChar(string) {
+  return string.toString().charAt(0).toLowerCase();
+}
+
+function formatResponse(rows) {
+  const rowLength = rows.length;
+  let terms = [];
+  let letters = [];
+
+  for(let i = 0; i < rowLength; i++) {
+    const {title, tags, content} = rows[i];
+    let position = null;
+
+    if(!title) continue;
+
+    const firstChar = getFirstChar(title);
+
+    if(!~letters.indexOf(firstChar)) {
+      letters = [...letters, firstChar];
+      position = 'first';
+    }
+
+    terms = [...terms, {
+        title: sanitizeHtml(title),
+        tags: sanitizeHtml(tags).split(','),
+        children: sanitizeHtml(content),
+        position
+      }
+    ];
+  }
+
+  return {
+    letters,
+    terms
+  };
 }
 
 async function handler(req, res) {
   const rows = await getRows();
+  const rowsSortedByTitle = sortByTitle(rows);
+  const response = formatResponse(rowsSortedByTitle);
+  const minify = JSON.stringify;
 
-  const formattedResponse = rows.reduce(pluckContent, []);
   res.setHeader('Access-Control-Allow-Origin', '*');
-  send(res, 200, formattedResponse);
+
+  send(res, 200, minify(response));
 }
 
 module.exports = handler;
